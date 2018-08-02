@@ -15,6 +15,7 @@ namespace fs = std::filesystem;
 
 #define XMKTEMP_VER     "1.0.0"
 #define XMKTEMP_AUTHOR  "Pedro Rodrigues"
+#define XMKTEMP_DEF_TEMPLATE "{}.tmp"
 
 inline auto random_name(const int size) -> string
 {
@@ -36,7 +37,7 @@ inline auto random_name(const int size) -> string
     return fn;
 }
 
-auto make_temp_name(string_view template_, fs::path dir)
+auto make_temp_name(string_view template_, fs::path dir, const int rndSize = 11)
 {
     if (!dir.is_absolute())
     {
@@ -54,7 +55,7 @@ auto make_temp_name(string_view template_, fs::path dir)
     return dir / fn;
 }
 
-error_code create_temp(const fs::path& p, fs::file_type type)
+error_code create_temp(const fs::path& p, bool isDir)
 {
     error_code ec;
 
@@ -64,18 +65,14 @@ error_code create_temp(const fs::path& p, fs::file_type type)
         else return make_error_code(errc::file_exists);
     }
 
-    if (type == fs::file_type::regular) {
+    if (!isDir) {
         fstream f;
         f.open(p, ios::out);
         if (f.good()) { f.close(); }
         else { ec = make_error_code(errc::io_error); }
     }
-    else if (type == fs::file_type::directory) {
+    else {
         fs::create_directory(p, ec);
-    }
-    else 
-    {
-        ec = make_error_code(errc::invalid_argument);
     }
     
     return ec;    
@@ -85,9 +82,9 @@ error_code create_temp(const fs::path& p, fs::file_type type)
 int main(int argc, char *argv[]) 
 {
     bool dry_run = false, showHelp = false, createDir = false;
-    string templ = "{}.tmp";
+    string templ = XMKTEMP_DEF_TEMPLATE;
     fs::path baseDir = fs::temp_directory_path();
-    uint8_t rand_size = 8;
+    uint8_t name_size = 11;
 
     auto cli = Help(showHelp)
     | Opt(dry_run)
@@ -101,8 +98,9 @@ int main(int argc, char *argv[])
         ("Base directory where the file/dir will be created, defaults to your system's"
         "TMP folder")
     | Arg(templ, "name template")
-        ("Template for the new file/dir name, any instance of '{}' will be replaced by random characters, " 
-        "all other characters are taken verbatim")
+        ("Template for the new file/dir name, if it contains '{}', a random sequence of characters "
+        "will be placed at that point, any other characters are taken verbatim. "
+        "If nothing is specified, '" XMKTEMP_DEF_TEMPLATE "' is used")
     ;
 
     auto result = cli.parse(Args(argc, argv));
@@ -124,8 +122,7 @@ int main(int argc, char *argv[])
 
     if (!dry_run) 
     {
-        auto type = createDir ? fs::file_type::directory : fs::file_type::regular;
-        auto ec = create_temp(path, type);
+        auto ec = create_temp(path, createDir);
         if (ec)
         {
             fmt::print(stderr, "Error: {} ({})\n", ec.message(), ec);
@@ -133,7 +130,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    fmt::print("{}\n", path.string());
+    puts(path.string().c_str());
 
     return 0;
 }
