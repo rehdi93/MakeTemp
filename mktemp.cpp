@@ -17,7 +17,7 @@ namespace fs = std::filesystem;
 #define XMKTEMP_AUTHOR  "Pedro Rodrigues"
 #define XMKTEMP_DEF_TEMPLATE "{}.tmp"
 
-inline auto random_name(const int size) -> string
+auto random_name(const int size) -> string
 {
     static const char data[] =
 		"0123456789"
@@ -25,8 +25,9 @@ inline auto random_name(const int size) -> string
 		"abcdefghijklmnopqrstuvwxyz"
         ;
 
-    auto eng = minstd_rand(random_device{}());
-    auto dist = uniform_int_distribution<short>(0, sizeof data-2);
+	auto rd = random_device{};
+    auto eng = minstd_rand(rd());
+    auto dist = uniform_int_distribution<>(0, sizeof data-2);
     
     auto fn = string(size, '*');
     for(auto& c : fn)
@@ -50,7 +51,8 @@ auto make_temp_name(string_view template_, fs::path dir, const int rndSize = 11)
         return dir / template_;
     }
 
-    auto fn = fmt::format(template_, random_name(11));
+	auto name = random_name(rndSize);
+    auto fn = fmt::format(template_, name);
 
     return dir / fn;
 }
@@ -78,6 +80,12 @@ error_code create_temp(const fs::path& p, bool isDir)
     return ec;    
 }
 
+auto help_column(const string& text)
+{
+    auto w = CLARA_CONFIG_CONSOLE_WIDTH;
+    return TextFlow::Column(text).width(w).indent(2);
+}
+
 
 int main(int argc, char *argv[]) 
 {
@@ -95,12 +103,12 @@ int main(int argc, char *argv[])
         ("Create a directory instead of a file")
     | Opt(baseDir, "path/to/dir")
         ["-b"]["--base-dir"]
-        ("Base directory where the file/dir will be created, defaults to your system's"
+        ("Base directory where the file/dir will be created, defaults to your system's "
         "TMP folder")
     | Arg(templ, "name template")
-        ("Template for the new file/dir name, if it contains '{}', a random sequence of characters "
-        "will be placed at that point, any other characters are taken verbatim. "
-        "If nothing is specified, '" XMKTEMP_DEF_TEMPLATE "' is used")
+    | Opt(name_size, "n# chars")
+        ["--rnd-chars"]
+        ("Number of random chars to write (255 max), 11 by default")
     ;
 
     auto result = cli.parse(Args(argc, argv));
@@ -112,13 +120,18 @@ int main(int argc, char *argv[])
 
     if (showHelp)
     {
-        fmt::print("Creates a temporary file or directory\n\n{}\nXmakeTemp. Ver{}\nMade by {}", 
-                cli, XMKTEMP_VER, XMKTEMP_AUTHOR);
         
+        fmt::print("Creates a temporary file or directory\n{}\n\n", cli);
+        fmt::print("Name template:\n{}\n\n", 
+            help_column(
+            "Template for the new file/dir name, if it contains '{}', a random sequence of characters "
+            "will be placed at that point, any other characters are taken verbatim. "
+            "If nothing is specified, '" XMKTEMP_DEF_TEMPLATE "' is used"
+        ));
         return 0;
     }
 
-    auto path = make_temp_name(templ, baseDir);
+    auto path = make_temp_name(templ, baseDir, name_size);
 
     if (!dry_run) 
     {
@@ -130,7 +143,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    puts(path.string().c_str());
+    fmt::print(path.string());
 
     return 0;
 }
