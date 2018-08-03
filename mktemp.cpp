@@ -63,9 +63,10 @@ error_code create_temp(const fs::path& p, bool isDir)
 
     if (fs::exists(p, ec))
     {
-        if (ec) return ec;
-        else return make_error_code(errc::file_exists);
+        return make_error_code(errc::file_exists);
     }
+
+    if (ec) return ec;
 
     if (!isDir) {
         fstream f;
@@ -120,7 +121,6 @@ int main(int argc, char *argv[])
 
     if (showHelp)
     {
-        
         fmt::print("Creates a temporary file or directory\n{}\n\n", cli);
         fmt::print("Name template:\n{}\n\n", 
             help_column(

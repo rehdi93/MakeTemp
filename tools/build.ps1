@@ -7,7 +7,9 @@ $Mode
 
 $sep = [string]::new('-', 35)
 $projRoot = Resolve-Path "$PSScriptRoot/.."
-$buildDir = Resolve-Path (Join-Path $projRoot "build")
+$buildDir = Join-Path $projRoot "build"
+
+if (!(Test-Path $buildDir)) { mkdir $buildDir }
 
 Push-Location $buildDir
 conan install .. -s build_type=$Mode
