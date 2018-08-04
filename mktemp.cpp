@@ -9,6 +9,7 @@
 #include "fmt/ostream.h"
 #include "clara.hpp"
 
+
 using namespace std;
 using namespace clara;
 namespace fs = std::filesystem;
@@ -16,6 +17,7 @@ namespace fs = std::filesystem;
 #define XMKTEMP_VER     "1.0.0"
 #define XMKTEMP_AUTHOR  "Pedro Rodrigues"
 #define XMKTEMP_DEF_TEMPLATE "{}.tmp"
+
 
 auto random_name(const int size) -> string
 {
@@ -38,17 +40,46 @@ auto random_name(const int size) -> string
     return fn;
 }
 
-auto make_temp_name(string_view template_, fs::path dir, const int rndSize = 11)
+bool validateTemplate(string_view templ)
 {
+    // validate replacement fields.
+    size_t startIdx = templ.find('{');
+
+    if (startIdx == string::npos)
+    {
+        // no replacement fields found
+        // this is ok, the template will just be used as the filename
+        return true;
+    }
+
+    size_t endIdx = templ.find('}', startIdx);
+    bool match = endIdx - startIdx == 1;
+    
+    startIdx = templ.find('{', endIdx);
+
+    // only one '{}' is allowed
+    return match && startIdx == string::npos;
+}
+
+auto make_temp_name(string_view template_, fs::path dir, const int rndSize, error_code& ec)
+{
+    ec.clear();
+
     if (!dir.is_absolute())
     {
         dir = fs::absolute(dir);
     }
 
-    if (template_.find("{}") == string::npos)
+    if (!validateTemplate(template_))
     {
-        // template lacks format pos. just use it as the name
-        return dir / template_;
+        ec = make_error_code(errc::invalid_argument);
+        return dir;
+    }
+
+    if (rndSize < 3 || rndSize > 255)
+    {
+        ec = make_error_code(errc::argument_out_of_domain);
+        return dir;
     }
 
 	auto name = random_name(rndSize);
@@ -93,7 +124,7 @@ int main(int argc, char *argv[])
     bool dry_run = false, showHelp = false, createDir = false;
     string templ = XMKTEMP_DEF_TEMPLATE;
     fs::path baseDir = fs::temp_directory_path();
-    uint8_t name_size = 11;
+    int name_size = 11;
 
     auto cli = Help(showHelp)
     | Opt(dry_run)
@@ -109,7 +140,7 @@ int main(int argc, char *argv[])
     | Arg(templ, "name template")
     | Opt(name_size, "n# chars")
         ["--rnd-chars"]
-        ("Number of random chars to write (255 max), 11 by default")
+        ("Number of random chars to write (min 3, max 255), 11 by default")
     ;
 
     auto result = cli.parse(Args(argc, argv));
@@ -124,18 +155,24 @@ int main(int argc, char *argv[])
         fmt::print("Creates a temporary file or directory\n{}\n\n", cli);
         fmt::print("Name template:\n{}\n\n", 
             help_column(
-            "Template for the new file/dir name, if it contains '{}', a random sequence of characters "
-            "will be placed at that point, any other characters are taken verbatim. "
+            "Template for the new file/dir name, if it contains a replacement field ('{}'), a random sequence of characters "
+            "will be replaced there, any other characters are taken verbatim. "
             "If nothing is specified, '" XMKTEMP_DEF_TEMPLATE "' is used"
         ));
         return 0;
     }
 
-    auto path = make_temp_name(templ, baseDir, name_size);
+    error_code ec;
+    auto path = make_temp_name(templ, baseDir, name_size, ec);
+    if (ec)
+    {
+        fmt::print(stderr, "Error: {} ({})\n", ec.message(), ec);
+        return 1;
+    }
 
     if (!dry_run) 
     {
-        auto ec = create_temp(path, createDir);
+        ec = create_temp(path, createDir);
         if (ec)
         {
             fmt::print(stderr, "Error: {} ({})\n", ec.message(), ec);

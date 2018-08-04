@@ -9,7 +9,7 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/bin/makeTemp.exe",
-            "args": ["-u"],
+            "args": ["-u", "--rnd-chars 0", "{}---{}.temp"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
