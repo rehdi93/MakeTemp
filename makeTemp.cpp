@@ -1,6 +1,7 @@
 #include "makeTemp.h"
 #include <random>
 #include <fstream>
+#include <string>
 #include "fmt/format.h"
 
 using namespace std;

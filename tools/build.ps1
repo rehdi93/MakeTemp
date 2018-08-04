@@ -1,6 +1,6 @@
 param(
 # Build mode
-[ValidateSet("Debug", "Release", "MinSizeRel", "RelWithDebInfo")]
+[ValidateSet("Debug", "Release")]
 [string]
 $Mode
 )

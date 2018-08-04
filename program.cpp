@@ -1,5 +1,7 @@
 // makeTemp entry point
 
+#define CLARA_CONFIG_CONSOLE_WIDTH 90
+
 #include "makeTemp.h"
 #include "fmt/ostream.h"
 #include "clara.hpp"
@@ -11,13 +13,6 @@
 using namespace std;
 using namespace clara;
 namespace fs = std::filesystem;
-
-
-auto help_column(const string& text)
-{
-    auto w = CLARA_CONFIG_CONSOLE_WIDTH;
-    return TextFlow::Column(text).width(w).indent(2);
-}
 
 
 int main(int argc, char *argv[]) 
@@ -53,16 +48,16 @@ int main(int argc, char *argv[])
 
     if (showHelp)
     {
-        fmt::print("Creates a temporary file or directory\n{}\n\n", cli);
-        fmt::print("Name template:\n{}\n\n", 
-            help_column(
+        fmt::print("Creates a temporary file or directory\n{}\n", cli);
+        fmt::print("Name template:\n{}\n", 
+            TextFlow::Column(
             "Template for the new file/dir name, optionally it may contain a replacement field ('{}') "
-            "that will be replaced by '-l num#' of random characters, any other characters are taken verbatim.\n"
+            "that will be replaced by 'n# chars' of random characters, any other characters are taken verbatim.\n"
             "Only ONE replacement field is allowed in the template. "
             "If nothing is specified, '" XMKTEMP_DEF_TEMPLATE "' is used.\n"
             "If no replacement field is present, the template will be the file/dir name. However if a file/dir "
             "of the same name exists in 'base dir', makeTemp will fail w/o touching the file system."
-        ));
+        ).indent(2));
         return 0;
     }
 
