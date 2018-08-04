@@ -10,12 +10,16 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": "$msCompile"
         },
         {
             "label": "Build Release",
             "type": "shell",
-            "command": "${workspaceFolder}/tools/build.ps1 -m Release"
+            "command": "${workspaceFolder}/tools/build.ps1 -m Release",
+            "problemMatcher": [
+                "$msCompile"
+            ]
         }
     ]
 }

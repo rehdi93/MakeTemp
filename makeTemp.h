@@ -9,11 +9,13 @@ enum class makeTempErr
     invalid_template = 1,
     rand_chars_out_of_range,
     file_dir_exists,
-    failed_to_create
+    unexpected_fail,
+    baseDir_not_found
 };
 
 struct makeTempErr_category : public std::error_category
 {
+    inline
     const char* name() const noexcept override { return "makeTemp error"; }
 
     inline
@@ -24,11 +26,13 @@ struct makeTempErr_category : public std::error_category
             case makeTempErr::invalid_template:
                 return "Template is not valid";
             case makeTempErr::rand_chars_out_of_range:
-                return "Length out of range";
+                return "Out of range length";
             case makeTempErr::file_dir_exists:
                 return "A file / directory of that name already exists, are you using a replacement field?";
-            case makeTempErr::failed_to_create:
+            case makeTempErr::unexpected_fail:
                 return "File / directory creation failed unexpectedly";
+            case makeTempErr::baseDir_not_found:
+                return "Base directory does not exist";
             default:
                 return "unknown";
         }
@@ -45,8 +49,10 @@ struct makeTempErr_category : public std::error_category
                 return std::make_error_condition(std::errc::argument_out_of_domain);
             case makeTempErr::file_dir_exists:
                 return std::make_error_condition(std::errc::file_exists);
-            case makeTempErr::failed_to_create:
+            case makeTempErr::unexpected_fail:
                 return std::make_error_condition(std::errc::io_error);
+            case makeTempErr::baseDir_not_found:
+                return std::make_error_condition(std::errc::no_such_file_or_directory);
             default:
                 return std::error_condition(c, *this);
         }

@@ -97,11 +97,20 @@ error_code create_temp(const fs::path& p, bool isDir)
 
     if (ec) return ec;
 
+    if (!fs::exists(p.parent_path(), ec))
+    {
+        return ec ? ec : make_error_code(makeTempErr::baseDir_not_found);
+    }
+
     if (!isDir) {
         fstream f;
         f.open(p, ios::out);
-        if (f.good()) { f.close(); }
-        else { ec = make_error_code(makeTempErr::failed_to_create); }
+        if (f.good()) { 
+            f.close(); 
+        } 
+        else { 
+            ec = make_error_code(makeTempErr::unexpected_fail); 
+        }
     }
     else {
         fs::create_directory(p, ec);
