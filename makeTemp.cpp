@@ -30,9 +30,9 @@ static auto random_name(const int size) -> string
     return fn;
 }
 
+// validate replacement fields.
 static bool validateTemplate(string_view templ)
 {
-    // validate replacement fields.
     size_t startIdx = templ.find('{');
 
     if (startIdx == string::npos)

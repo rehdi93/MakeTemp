@@ -48,7 +48,8 @@ int main(int argc, char *argv[])
 
     if (showHelp)
     {
-        fmt::print("Creates a temporary file or directory\n{}\n", cli);
+        // printing 'cli' prints Clara's generated help
+        fmt::print("Creates a temporary file or directory\n{}\n", cli); 
         fmt::print("Name template:\n{}\n\n", 
             TextFlow::Column(
             "Template for the new file/dir name, optionally it may contain a replacement field ('{}') "
@@ -82,6 +83,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    // all went well, print path
     fmt::print(path.string());
 
     return 0;
