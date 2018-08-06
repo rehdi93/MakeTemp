@@ -6,19 +6,32 @@
         {
             "label": "Build Debug",
             "type": "shell",
-            "command": "${workspaceFolder}/tools/build.ps1 -m Debug",
+            "windows": {
+                "command": "${workspaceFolder}/tools/build.ps1"
+            },
+            "linux": {
+                "command": "${workspaceFolder}/tools/build.py"
+            }, 
+            "args": [
+                "-m", "Debug"
+            ], 
+            "problemMatcher": "$gcc",
             "group": {
                 "kind": "build",
                 "isDefault": true
-            },
-            "problemMatcher": "$msCompile"
+            }
         },
         {
             "label": "Build Release",
             "type": "shell",
-            "command": "${workspaceFolder}/tools/build.ps1 -m Release",
-            "problemMatcher": [
-                "$msCompile"
+            "windows": {
+                "command": "${workspaceFolder}/tools/build.ps1"
+            },
+            "linux": {
+                "command": "python3 ${workspaceFolder}/tools/build.py"
+            },
+            "args": [
+              "-m", "Release"  
             ]
         }
     ]
