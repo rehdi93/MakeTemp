@@ -17,8 +17,7 @@ static auto random_name(const int size) -> string
 		"abcdefghijklmnopqrstuvwxyz"
         ;
 
-	auto rd = random_device{};
-    auto eng = minstd_rand(rd());
+    auto eng = minstd_rand(random_device{}());
     auto dist = uniform_int_distribution<>(0, sizeof data-2);
     
     auto fn = string(size, '*');
