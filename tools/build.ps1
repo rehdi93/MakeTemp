@@ -13,7 +13,7 @@ if (!(Test-Path $buildDir)) { mkdir $buildDir }
 
 Push-Location $buildDir
 conan install .. -s build_type=$Mode
-echo $sep
+echo "conan returned $LASTEXITCODE"
 cmake --build . --config $Mode
-echo $sep
+echo "cmake returned $LASTEXITCODE"
 Pop-Location

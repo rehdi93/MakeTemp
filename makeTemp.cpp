@@ -1,8 +1,9 @@
-#include "makeTemp.h"
 #include <random>
 #include <fstream>
 #include <string>
+
 #include "fmt/format.h"
+#include "makeTemp.h"
 
 using namespace std;
 namespace fs = std::filesystem;

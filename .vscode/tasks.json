@@ -28,7 +28,7 @@
                 "command": "${workspaceFolder}/tools/build.ps1"
             },
             "linux": {
-                "command": "python3 ${workspaceFolder}/tools/build.py"
+                "command": "${workspaceFolder}/tools/build.py"
             },
             "args": [
               "-m", "Release"  

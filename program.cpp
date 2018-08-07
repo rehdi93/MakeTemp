@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
     }
 
     // all went well, print path
-    fmt::print(path.string());
+    fmt::print(path.string() + '\n');
 
     return 0;
 }
