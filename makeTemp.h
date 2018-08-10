@@ -58,7 +58,6 @@ struct makeTempErr_category : public std::error_category
 
 extern makeTempErr_category& MakeTempErr_category();
 
-// error_code boilerplate
 namespace std
 {
     template <> struct is_error_code_enum<makeTempErr> : std::true_type {};
@@ -70,7 +69,7 @@ inline std::error_code make_error_code(makeTempErr e)
 }
 
 
-auto make_temp_name(std::string_view template_, std::filesystem::path baseDir, const int rndCharLen, std::error_code& ec)
+auto temp_filename(std::string_view template_, std::filesystem::path baseDir, const int rndCharLen, std::error_code& ec)
  -> std::filesystem::path;
 
 std::error_code create_temp(const std::filesystem::path& p, bool isDir);

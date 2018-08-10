@@ -15,29 +15,57 @@ using namespace clara;
 namespace fs = std::filesystem;
 
 
-int main(int argc, char *argv[]) 
+struct makeTempOptions
 {
     bool dry_run = false, showHelp = false, createDir = false;
-    string templ = XMKTEMP_DEF_TEMPLATE;
-    fs::path baseDir = fs::temp_directory_path();
     int name_size = 11;
+    string name_template = XMKTEMP_DEF_TEMPLATE;
+    fs::path base_dir = fs::temp_directory_path();
 
-    auto cli = Help(showHelp)
-    | Opt(dry_run)
+    Parser* cli = nullptr;
+    
+} options = {};
+
+void print_help()
+{
+    // printing 'cli' prints Clara's generated help
+    fmt::print("Creates a temporary file or directory\n{}\n", *options.cli);
+    fmt::print("Name template:\n{}\n\n", 
+        TextFlow::Column(
+        "Template for the new file/dir name, optionally it may contain a replacement field ('{}') "
+        "that will be replaced by 'n#' of random characters, any other characters are taken verbatim.\n"
+        "Only ONE replacement field is allowed in the template. "
+        "If nothing is specified, '" XMKTEMP_DEF_TEMPLATE "' is used.\n"
+        "If no replacement field is present, the template will be the file/dir name. However if a file/dir "
+        "of the same name exists in 'base dir', makeTemp will fail."
+    ).indent(2));
+    
+    fmt::print("Credits:\n{}\n\n",
+        TextFlow::Column("makeTemp v" XMKTEMP_VER " by " XMKTEMP_AUTHOR).indent(2)
+    );
+}
+
+
+int main(int argc, char *argv[]) 
+{
+    auto cli = Help(options.showHelp)
+    | Opt(options.dry_run)
         ["-u"]["--dry-run"]
         ("Don't create anything, just print the name")
-    | Opt(createDir)
+    | Opt(options.createDir)
         ["-d"]["--directory"]
         ("Create a directory instead of a file")
-    | Opt(baseDir, "base dir")
+    | Opt(options.base_dir, "base dir")
         ["-b"]["--base-dir"]
         ("Base directory where the file/dir will be created, defaults to your system's "
         "TMP folder")
-    | Arg(templ, "name template")
-    | Opt(name_size, "n# chars")
+    | Arg(options.name_template, "name template")
+    | Opt(options.name_size, "n# chars")
         ["-l"]["--rnd-lenght"]
         ("Number of random chars to write when a replacement field is found (min 3, max 255), 11 by default")
     ;
+
+    options.cli = &cli;
 
     auto result = cli.parse(Args(argc, argv));
     if(!result) 
@@ -46,37 +74,23 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (showHelp)
+    if (options.showHelp)
     {
-        // printing 'cli' prints Clara's generated help
-        fmt::print("Creates a temporary file or directory\n{}\n", cli); 
-        fmt::print("Name template:\n{}\n\n", 
-            TextFlow::Column(
-            "Template for the new file/dir name, optionally it may contain a replacement field ('{}') "
-            "that will be replaced by 'n#' of random characters, any other characters are taken verbatim.\n"
-            "Only ONE replacement field is allowed in the template. "
-            "If nothing is specified, '" XMKTEMP_DEF_TEMPLATE "' is used.\n"
-            "If no replacement field is present, the template will be the file/dir name. However if a file/dir "
-            "of the same name exists in 'base dir', makeTemp will fail."
-        ).indent(2));
-        
-        fmt::print("Credits:\n{}\n\n",
-            TextFlow::Column("makeTemp v" XMKTEMP_VER " by " XMKTEMP_AUTHOR).indent(2)
-        );
+        print_help();
         return 0;
     }
 
     error_code ec;
-    auto path = make_temp_name(templ, baseDir, name_size, ec);
+    auto path = temp_filename(options.name_template, options.base_dir, options.name_size, ec);
     if (ec)
     {
         fmt::print(stderr, "Error: {}\n", ec.message());
         return 1;
     }
 
-    if (!dry_run) 
+    if (!options.dry_run) 
     {
-        ec = create_temp(path, createDir);
+        ec = create_temp(path, options.createDir);
         if (ec)
         {
             fmt::print(stderr, "Error: {}\n", ec.message());
