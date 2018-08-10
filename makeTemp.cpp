@@ -30,28 +30,6 @@ static auto random_name(const int size) -> string
     return fn;
 }
 
-// validate replacement fields.
-static bool validateTemplate(string_view templ)
-{
-    size_t startIdx = templ.find('{');
-
-    if (startIdx == string::npos)
-    {
-        // no replacement fields found
-        // this is ok, the template will just be used as the filename
-        return true;
-    }
-
-    size_t endIdx = templ.find('}', startIdx);
-    bool match = endIdx - startIdx == 1;
-    
-    startIdx = templ.find('{', endIdx);
-
-    // only one '{}' is allowed
-    return match && startIdx == string::npos;
-}
-
-
 extern
 makeTempErr_category& MakeTempErr_category()
 {
@@ -68,12 +46,6 @@ fs::path make_temp_name(string_view template_, fs::path dir, const int rndSize, 
         dir = fs::absolute(dir);
     }
 
-    if (!validateTemplate(template_))
-    {
-        ec = make_error_code(makeTempErr::invalid_template);
-        return dir;
-    }
-
     if (rndSize < 3 || rndSize > 255)
     {
         ec = make_error_code(makeTempErr::rand_chars_out_of_range);
@@ -81,9 +53,18 @@ fs::path make_temp_name(string_view template_, fs::path dir, const int rndSize, 
     }
 
 	auto name = random_name(rndSize);
-    auto fn = fmt::format(template_, name);
-
-    return dir / fn;
+    
+    try
+    {
+        auto fn = fmt::format(template_, name);
+        dir /= fn;
+    }
+    catch(const fmt::format_error& e)
+    {
+        ec = make_error_code(makeTempErr::invalid_template);
+    }
+    
+    return dir;
 }
 
 error_code create_temp(const fs::path& p, bool isDir)
@@ -109,7 +90,7 @@ error_code create_temp(const fs::path& p, bool isDir)
             f.close(); 
         } 
         else { 
-            ec = make_error_code(makeTempErr::unexpected_fail); 
+            ec = make_error_code(errc::io_error); 
         }
     }
     else {

@@ -53,14 +53,15 @@ int main(int argc, char *argv[])
         fmt::print("Name template:\n{}\n\n", 
             TextFlow::Column(
             "Template for the new file/dir name, optionally it may contain a replacement field ('{}') "
-            "that will be replaced by 'n# chars' of random characters, any other characters are taken verbatim.\n"
+            "that will be replaced by 'n#' of random characters, any other characters are taken verbatim.\n"
             "Only ONE replacement field is allowed in the template. "
             "If nothing is specified, '" XMKTEMP_DEF_TEMPLATE "' is used.\n"
             "If no replacement field is present, the template will be the file/dir name. However if a file/dir "
-            "of the same name exists in 'base dir', makeTemp will fail w/o touching the file system."
+            "of the same name exists in 'base dir', makeTemp will fail."
         ).indent(2));
+        
         fmt::print("Credits:\n{}\n\n",
-            TextFlow::Column("makeTemp " XMKTEMP_VER " by " XMKTEMP_AUTHOR).indent(2)
+            TextFlow::Column("makeTemp v" XMKTEMP_VER " by " XMKTEMP_AUTHOR).indent(2)
         );
         return 0;
     }
