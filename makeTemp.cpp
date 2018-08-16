@@ -37,7 +37,7 @@ makeTempErr_category& MakeTempErr_category()
     return c;
 }
 
-fs::path make_temp_name(string_view template_, fs::path dir, const int rndSize, error_code& ec)
+fs::path temp_filename(string_view template_, fs::path dir, const int rndSize, error_code& ec)
 {
     ec.clear();
 
@@ -59,9 +59,9 @@ fs::path make_temp_name(string_view template_, fs::path dir, const int rndSize, 
         auto fn = fmt::format(template_, name);
         dir /= fn;
     }
-    catch(const fmt::format_error& e)
+    catch(const fmt::format_error& )
     {
-        ec = make_error_code(makeTempErr::invalid_template);
+        ec = make_error_code(makeTempErr::invalid_template); 
     }
     
     return dir;
