@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     auto cli = Help(options.showHelp)
     | Opt(options.dry_run)
         ["-u"]["--dry-run"]
-        ("Don't create anything, just print the name")
+        ("Don't create anything, just print the genereted name")
     | Opt(options.createDir)
         ["-d"]["--directory"]
         ("Create a directory instead of a file")

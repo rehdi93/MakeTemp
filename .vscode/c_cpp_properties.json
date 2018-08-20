@@ -21,7 +21,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/home/pedro/.conan/data/fmt/5.1.0/bincrafters/stable/package/39bd720edc05274c8736f35272c9a9499e66d3e2/include"
+                "/home/pedro/.conan/data/fmt/5.1.0/bincrafters/stable/package/44550616fd680c394d91251d26dca39e660de618/include"
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",

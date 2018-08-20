@@ -19,7 +19,7 @@ static auto random_name(const int size) -> string
         ;
 
     auto eng = minstd_rand(random_device{}());
-    auto dist = uniform_int_distribution<>(0, sizeof data-2);
+    auto dist = uniform_int_distribution<>(0, std::size(data) - 2);
     
     auto fn = string(size, '*');
     for(auto& c : fn)
