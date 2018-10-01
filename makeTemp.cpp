@@ -22,7 +22,7 @@ static auto random_name(const int size) -> string
     auto dist = uniform_int_distribution<>(0, std::size(data) - 2);
     
     auto fn = string(size, '*');
-    for(auto& c : fn)
+    for (auto& c : fn)
     {
         c = data[dist(eng)];
     }
@@ -86,13 +86,11 @@ error_code create_temp(const fs::path& p, bool isDir)
     if (!isDir) {
         fstream f;
         f.open(p, ios::out);
-        if (f.good()) { 
-            f.close(); 
-        } 
-        else { 
+        if (f.bad()) { 
             ec = make_error_code(errc::io_error); 
-        }
-    }
+        } 
+        f.close(); 
+    } 
     else {
         fs::create_directory(p, ec);
     }

@@ -18,3 +18,5 @@ set_target_properties(
 if(NOT MSVC)
   target_link_libraries(makeTemp stdc++fs)
 endif()
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
