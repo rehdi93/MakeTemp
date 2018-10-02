@@ -15,10 +15,8 @@ enum class makeTempErr
 
 struct makeTempErr_category : public std::error_category
 {
-    inline
     const char* name() const noexcept override { return "makeTemp error"; }
 
-    inline
     std::string message(int c) const override
     {
         switch (static_cast<makeTempErr>(c))
@@ -37,7 +35,6 @@ struct makeTempErr_category : public std::error_category
         }
     }
 
-    inline
     std::error_condition default_error_condition(int c) const noexcept override
     {
         switch (static_cast<makeTempErr>(c))

@@ -20,9 +20,9 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/home/pedro/.conan/data/fmt/5.1.0/bincrafters/stable/package/053ea29eb0edc6b1695c893b738a971110c756fd/include"
             ], 
-            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
             "cppStandard": "c++17",

@@ -6,20 +6,33 @@
         {
             "label": "Build Debug",
             "type": "shell",
-            "command": "powershell",
-            "args": [ "${workspaceFolder}/tools/build.ps1", "-m", "Debug" ], 
             "problemMatcher": "$gcc",
             "group": {
                 "kind": "build",
                 "isDefault": true
+            },
+            "windows": {
+                "command": "powershell",
+                "args": [ "${workspaceFolder}/tools/build.ps1", "-m", "Debug" ]
+            },
+            "linux": {
+                "command": "bash",
+                "args": [ "${workspaceFolder}/tools/build.sh", "Debug" ]
             }
         },
         {
             "label": "Build Release",
             "type": "shell",
-            "command": "powershell",
-            "args": [ "${workspaceFolder}/tools/build.ps1", "-m", "Release" ],
-            "problemMatcher": "$gcc"
+            "problemMatcher": "$gcc",
+            "windows": {
+                "command": "powershell",
+                "args": [ "${workspaceFolder}/tools/build.ps1", "-m", "Release" ]
+            },
+            "linux": {
+                "command": "bash",
+                "args": [ "${workspaceFolder}/tools/build.sh", "Release" ]
+            }
+
         }
     ]
 }
