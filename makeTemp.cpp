@@ -5,7 +5,9 @@
 #include "fmt/format.h"
 #include "makeTemp.h"
 
-using namespace std;
+using std::string;
+using std::string_view;
+using std::error_code;
 namespace fs = std::filesystem;
 
 // helper methods
@@ -18,8 +20,8 @@ static auto random_name(const int size) -> string
 		"abcdefghijklmnopqrstuvwxyz"
         ;
 
-    auto eng = minstd_rand(random_device{}());
-    auto dist = uniform_int_distribution<>(0, std::size(data) - 2);
+    auto eng = std::minstd_rand(std::random_device{}());
+    auto dist = std::uniform_int_distribution<>(0, std::size(data) - 2);
     
     auto fn = string(size, '*');
     for (auto& c : fn)
@@ -29,6 +31,32 @@ static auto random_name(const int size) -> string
 
     return fn;
 }
+
+std::pair<int, std::string> parse_template(string_view tmplt)
+{
+    int ret = -1;
+    auto t = std::string(tmplt);
+
+    auto it = std::adjacent_find(begin(t), end(t), 
+    [](const char a, const char b) {
+        return a == '{' && std::isdigit(b);
+    });
+
+    if (it == t.end()) return {ret, t};
+
+    auto prevIt = it;
+    auto numS = ++it;
+    
+    while(std::isdigit(*it)) { ++it; }
+
+    auto tmp = std::string(numS, it);
+    ret = std::stoi(tmp);
+
+    t.erase(numS, it);
+
+    return { ret, t };
+}
+
 
 extern
 makeTempErr_category& MakeTempErr_category()
@@ -67,6 +95,38 @@ fs::path temp_filename(string_view template_, fs::path dir, const int rndSize, e
     return dir;
 }
 
+fs::path temp_filename(string_view tmplt, fs::path dir, error_code& ec)
+{
+    ec.clear();
+    
+    if (!dir.is_absolute())
+    {
+        dir = fs::absolute(dir);
+    }
+
+    auto[charCount, normTempl] = parse_template(tmplt);
+
+    if (charCount < 3 || charCount > 255)
+    {
+        ec = make_error_code(makeTempErr::rand_chars_out_of_range);
+        return dir;
+    }
+
+    auto name = random_name(charCount);
+
+    try
+    {
+        auto fn = fmt::format(normTempl, name);
+        dir /= fn;
+    }
+    catch(const fmt::format_error& )
+    {
+        ec = make_error_code(makeTempErr::invalid_template); 
+    }
+    
+    return dir;
+}
+
 error_code create_temp(const fs::path& p, bool isDir)
 {
     error_code ec;
@@ -84,10 +144,10 @@ error_code create_temp(const fs::path& p, bool isDir)
     }
 
     if (!isDir) {
-        fstream f;
-        f.open(p, ios::out);
+        std::fstream f;
+        f.open(p, std::ios::out);
         if (f.bad()) { 
-            ec = make_error_code(errc::io_error); 
+            ec = make_error_code(std::errc::io_error); 
         } 
         f.close(); 
     } 

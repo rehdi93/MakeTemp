@@ -14,7 +14,6 @@ using namespace std;
 using namespace clara;
 namespace fs = std::filesystem;
 
-
 struct makeTempOptions
 {
     bool dry_run = false, showHelp = false, createDir = false;
@@ -60,9 +59,9 @@ int main(int argc, char *argv[])
         ("Base directory where the file/dir will be created, defaults to your system's "
         "TMP folder")
     | Arg(options.name_template, "name template")
-    | Opt(options.name_size, "n# chars")
-        ["-l"]["--rnd-lenght"]
-        ("Number of random chars to write when a replacement field is found (min 3, max 255), 11 by default")
+    // | Opt(options.name_size, "n# chars")
+    //     ["-l"]["--rnd-lenght"]
+    //     ("Number of random chars to write when a replacement field is found (min 3, max 255), 11 by default")
     ;
 
     options.cli = &cli;
@@ -81,7 +80,7 @@ int main(int argc, char *argv[])
     }
 
     error_code ec;
-    auto path = temp_filename(options.name_template, options.base_dir, options.name_size, ec);
+    auto path = temp_filename(options.name_template, options.base_dir, ec);
     if (ec)
     {
         fmt::print(stderr, "Error: {}\n", ec.message());

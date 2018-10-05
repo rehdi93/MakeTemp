@@ -21,7 +21,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/bin/makeTemp",
-            "args": ["-u"],
+            "args": ["-u", "{20}.tmp"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
