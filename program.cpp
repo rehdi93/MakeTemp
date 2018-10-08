@@ -6,9 +6,10 @@
 #include "fmt/ostream.h"
 #include "clara.hpp"
 
-#define XMKTEMP_VER             "1.0.0"
+#define XMKTEMP_VER             "1.1.0"
 #define XMKTEMP_AUTHOR          "Pedro Rodrigues"
 #define XMKTEMP_DEF_TEMPLATE    "{}.tmp"
+#define XMKTEMP_EXE             "makeTemp"
 
 using namespace std;
 using namespace clara;
@@ -17,7 +18,6 @@ namespace fs = std::filesystem;
 struct makeTempOptions
 {
     bool dry_run = false, showHelp = false, createDir = false;
-    int name_size = 11;
     string name_template = XMKTEMP_DEF_TEMPLATE;
     fs::path base_dir = fs::temp_directory_path();
 
@@ -31,16 +31,26 @@ void print_help()
     fmt::print("Creates a temporary file or directory\n{}\n", *options.cli);
     fmt::print("Name template:\n{}\n\n", 
         TextFlow::Column(
-        "Template for the new file/dir name, optionally it may contain a replacement field ('{}') "
-        "that will be replaced by 'n#' of random characters, any other characters are taken verbatim.\n"
+        "Template for the new file/dir name, optionally it may contain a replacement field '{n#}' "
+        "where 'n#' is length of the generated name. " 
+        "If no numbers are specified in the brackets, 11 is assumed.\n"
         "Only ONE replacement field is allowed in the template. "
         "If nothing is specified, '" XMKTEMP_DEF_TEMPLATE "' is used.\n"
         "If no replacement field is present, the template will be the file/dir name. However if a file/dir "
-        "of the same name exists in 'base dir', makeTemp will fail."
+        "of the same name exists in 'base dir', " XMKTEMP_EXE " will fail."
     ).indent(2));
+
+    fmt::print("Exemple:\n{}\n{}\n\n", 
+        TextFlow::Column(
+            XMKTEMP_EXE " -b /my/dir {5}"
+            ).indent(2),
+        TextFlow::Column(
+            "# exemple output: /my/dir/abcde"
+            ).indent(3)
+    );
     
     fmt::print("Credits:\n{}\n\n",
-        TextFlow::Column("makeTemp v" XMKTEMP_VER " by " XMKTEMP_AUTHOR).indent(2)
+        TextFlow::Column(XMKTEMP_EXE " v" XMKTEMP_VER " by " XMKTEMP_AUTHOR).indent(2)
     );
 }
 
@@ -59,9 +69,6 @@ int main(int argc, char *argv[])
         ("Base directory where the file/dir will be created, defaults to your system's "
         "TMP folder")
     | Arg(options.name_template, "name template")
-    // | Opt(options.name_size, "n# chars")
-    //     ["-l"]["--rnd-lenght"]
-    //     ("Number of random chars to write when a replacement field is found (min 3, max 255), 11 by default")
     ;
 
     options.cli = &cli;

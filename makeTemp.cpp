@@ -32,10 +32,16 @@ static auto random_name(const int size) -> string
     return fn;
 }
 
-std::pair<int, std::string> parse_template(string_view tmplt)
+std::pair<int, string> parse_template(string_view tmplt)
 {
     int ret = -1;
     auto t = std::string(tmplt);
+
+    // find default case
+    if (t.find("{}") != string::npos) {
+        ret = 11;
+        return {ret,t};
+    }
 
     auto it = std::adjacent_find(begin(t), end(t), 
     [](const char a, const char b) {
@@ -44,15 +50,16 @@ std::pair<int, std::string> parse_template(string_view tmplt)
 
     if (it == t.end()) return {ret, t};
 
-    auto prevIt = it;
-    auto numS = ++it;
-    
-    while(std::isdigit(*it)) { ++it; }
+    auto ite = std::find(it, t.end(), '}');
 
-    auto tmp = std::string(numS, it);
-    ret = std::stoi(tmp);
+    if (ite == t.end()) return {ret, t};
 
-    t.erase(numS, it);
+    auto numIt = it + 1;
+    auto num = std::string(numIt,ite);
+    ret = std::stoi(num);
+
+    // remove number, leaving only '{}'
+    t.erase(numIt, ite);
 
     return { ret, t };
 }
@@ -106,6 +113,11 @@ fs::path temp_filename(string_view tmplt, fs::path dir, error_code& ec)
 
     auto[charCount, normTempl] = parse_template(tmplt);
 
+    if (charCount == -1) {
+        ec = make_error_code(makeTempErr::invalid_template);
+        return dir;
+    }
+    
     if (charCount < 3 || charCount > 255)
     {
         ec = make_error_code(makeTempErr::rand_chars_out_of_range);
