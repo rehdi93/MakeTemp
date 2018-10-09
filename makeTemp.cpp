@@ -32,6 +32,13 @@ static auto random_name(const int size) -> string
     return fn;
 }
 
+// convert to uchar
+// https://en.cppreference.com/w/cpp/string/byte/isdigit
+static bool is_digit(unsigned char c) {
+    return std::isdigit(c);
+}
+
+
 std::pair<int, string> parse_template(string_view tmplt)
 {
     int ret = -1;
@@ -39,23 +46,22 @@ std::pair<int, string> parse_template(string_view tmplt)
 
     // find default case
     if (t.find("{}") != string::npos) {
-        ret = 11;
-        return {ret,t};
+        return { 11, t };
     }
 
     auto it = std::adjacent_find(begin(t), end(t), 
-    [](const char a, const char b) {
+    [](const unsigned char a, const unsigned char b) {
         return a == '{' && std::isdigit(b);
     });
 
-    if (it == t.end()) return {ret, t};
-
     auto ite = std::find(it, t.end(), '}');
+    auto numIt = std::next(it);
 
-    if (ite == t.end()) return {ret, t};
+    if (!std::all_of(numIt, ite, is_digit)) {
+        return { ret, t };
+    }
 
-    auto numIt = it + 1;
-    auto num = std::string(numIt,ite);
+    auto num = std::string(numIt, ite);
     ret = std::stoi(num);
 
     // remove number, leaving only '{}'
@@ -72,35 +78,6 @@ makeTempErr_category& MakeTempErr_category()
     return c;
 }
 
-fs::path temp_filename(string_view template_, fs::path dir, const int rndSize, error_code& ec)
-{
-    ec.clear();
-
-    if (!dir.is_absolute())
-    {
-        dir = fs::absolute(dir);
-    }
-
-    if (rndSize < 3 || rndSize > 255)
-    {
-        ec = make_error_code(makeTempErr::rand_chars_out_of_range);
-        return dir;
-    }
-
-	auto name = random_name(rndSize);
-    
-    try
-    {
-        auto fn = fmt::format(template_, name);
-        dir /= fn;
-    }
-    catch(const fmt::format_error& )
-    {
-        ec = make_error_code(makeTempErr::invalid_template); 
-    }
-    
-    return dir;
-}
 
 fs::path temp_filename(string_view tmplt, fs::path dir, error_code& ec)
 {
@@ -120,7 +97,7 @@ fs::path temp_filename(string_view tmplt, fs::path dir, error_code& ec)
     
     if (charCount < 3 || charCount > 255)
     {
-        ec = make_error_code(makeTempErr::rand_chars_out_of_range);
+        ec = make_error_code(makeTempErr::bad_template_lenght);
         return dir;
     }
 
@@ -131,7 +108,7 @@ fs::path temp_filename(string_view tmplt, fs::path dir, error_code& ec)
         auto fn = fmt::format(normTempl, name);
         dir /= fn;
     }
-    catch(const fmt::format_error& )
+    catch(const fmt::format_error& e)
     {
         ec = make_error_code(makeTempErr::invalid_template); 
     }
@@ -152,7 +129,7 @@ error_code create_temp(const fs::path& p, bool isDir)
 
     if (!fs::exists(p.parent_path(), ec))
     {
-        return ec ? ec : make_error_code(makeTempErr::baseDir_not_found);
+        return ec ? ec : make_error_code(makeTempErr::base_dir_not_found);
     }
 
     if (!isDir) {

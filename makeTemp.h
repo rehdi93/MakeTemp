@@ -7,9 +7,9 @@
 enum class makeTempErr
 {
     invalid_template = 1,
-    rand_chars_out_of_range,
+    bad_template_lenght,
     file_dir_exists,
-    baseDir_not_found,
+    base_dir_not_found,
     unexpected = 99
 };
 
@@ -23,11 +23,11 @@ struct makeTempErr_category : public std::error_category
         {
             case makeTempErr::invalid_template:
                 return "Template is not valid";
-            case makeTempErr::rand_chars_out_of_range:
-                return "Out of range length";
+            case makeTempErr::bad_template_lenght:
+                return "Invalid template lenght";
             case makeTempErr::file_dir_exists:
-                return "A file / directory of that name already exists, are you using a replacement field?";
-            case makeTempErr::baseDir_not_found:
+                return "A file / directory of that name already exists";
+            case makeTempErr::base_dir_not_found:
                 return "Base directory does not exist";
             case makeTempErr::unexpected:
             default:
@@ -41,11 +41,11 @@ struct makeTempErr_category : public std::error_category
         {
             case makeTempErr::invalid_template:
                 return std::make_error_condition(std::errc::invalid_argument);
-            case makeTempErr::rand_chars_out_of_range:
+            case makeTempErr::bad_template_lenght:
                 return std::make_error_condition(std::errc::argument_out_of_domain);
             case makeTempErr::file_dir_exists:
                 return std::make_error_condition(std::errc::file_exists);
-            case makeTempErr::baseDir_not_found:
+            case makeTempErr::base_dir_not_found:
                 return std::make_error_condition(std::errc::no_such_file_or_directory);
             default:
                 return std::error_condition(c, *this);
@@ -55,8 +55,7 @@ struct makeTempErr_category : public std::error_category
 
 extern makeTempErr_category& MakeTempErr_category();
 
-namespace std
-{
+namespace std {
     template <> struct is_error_code_enum<makeTempErr> : true_type {};
 } 
 
@@ -65,9 +64,6 @@ inline std::error_code make_error_code(makeTempErr e)
     return {static_cast<int>(e), MakeTempErr_category()};
 }
 
-
-auto temp_filename(std::string_view template_, std::filesystem::path baseDir, const int rndCharLen, std::error_code& ec)
- -> std::filesystem::path;
 
 auto temp_filename(std::string_view template_, std::filesystem::path baseDir, std::error_code& ec)
  -> std::filesystem::path;
