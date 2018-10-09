@@ -55,6 +55,11 @@ std::pair<int, string> parse_template(string_view tmplt)
     });
 
     auto ite = std::find(it, t.end(), '}');
+
+    if (it == t.end() || ite == t.end()) {
+        return { ret, t };
+    }
+
     auto numIt = std::next(it);
 
     if (!std::all_of(numIt, ite, is_digit)) {

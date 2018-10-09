@@ -2,9 +2,12 @@
 
 mode="$1"
 
+generator="Unix Makefiles"
 projRoot="$(dirname "$0")/.."
 buildDir="$projRoot/build"
 SEP="----------------------------------"
+
+[ -d "$buildDir" ] || mkdir "$buildDir"
 
 pushd "$buildDir"
 
@@ -14,7 +17,7 @@ echo "conan returned $?"
 echo $SEP
 
 # cmake gen
-cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$mode
+cmake .. -G "$generator" -DCMAKE_BUILD_TYPE=$mode
 echo "cmake returned $?"
 echo $SEP
 
