@@ -34,5 +34,3 @@
 
 # Red
 build/*
-tools/*.txt
-.vscode/settings.json

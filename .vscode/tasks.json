@@ -13,11 +13,11 @@
             },
             "windows": {
                 "command": "powershell",
-                "args": [ "${workspaceFolder}/tools/build.ps1", "-m", "Debug" ]
+                "args": [ "${workspaceFolder}/scripts/build.ps1", "-m", "Debug" ]
             },
             "linux": {
                 "command": "bash",
-                "args": [ "${workspaceFolder}/tools/build.sh", "Debug" ]
+                "args": [ "${workspaceFolder}/scripts/build.sh", "Debug" ]
             }
         },
         {
@@ -26,11 +26,11 @@
             "problemMatcher": "$gcc",
             "windows": {
                 "command": "powershell",
-                "args": [ "${workspaceFolder}/tools/build.ps1", "-m", "Release" ]
+                "args": [ "${workspaceFolder}/scripts/build.ps1", "-m", "Release" ]
             },
             "linux": {
                 "command": "bash",
-                "args": [ "${workspaceFolder}/tools/build.sh", "Release" ]
+                "args": [ "${workspaceFolder}/scripts/build.sh", "Release" ]
             }
 
         }
