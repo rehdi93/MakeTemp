@@ -3,8 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**",
-                "C:/Users/Pedro/.conan/data/fmt/5.1.0/bincrafters/stable/package/4fbb7f15bea2f52c0227861e1d3a322786d24189/include"
+                "${workspaceFolder}/**"
             ],
             "browse": {
                 "path": [
@@ -25,8 +24,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/home/pedro/.conan/data/fmt/5.1.0/bincrafters/stable/package/053ea29eb0edc6b1695c893b738a971110c756fd/include"
+                "${workspaceFolder}/**"            
             ],
             "browse": {
                 "path": [
@@ -39,7 +37,8 @@
             "intelliSenseMode": "clang-x64",
             "defines": [
                 "FMT_USE_STD_STRING_VIEW"
-            ]
+            ],
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
         }
     ],
     "version": 4
