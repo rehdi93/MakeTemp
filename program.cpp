@@ -1,15 +1,10 @@
 // makeTemp entry point
 
-#define CLARA_CONFIG_CONSOLE_WIDTH 90
 
 #include "makeTemp.h"
 #include "fmt/ostream.h"
 #include "clara.hpp"
-
-#define XMKTEMP_VER             "1.1.0"
-#define XMKTEMP_AUTHOR          "Pedro Rodrigues"
-#define XMKTEMP_DEF_TEMPLATE    "{}.tmp"
-#define XMKTEMP_EXE             "makeTemp"
+#include "config.h"
 
 using namespace std;
 using namespace clara;
@@ -18,7 +13,7 @@ namespace fs = std::filesystem;
 struct makeTempOptions
 {
     bool dry_run = false, showHelp = false, createDir = false;
-    string name_template = XMKTEMP_DEF_TEMPLATE;
+    string name_template = MAKETEMP_DEF_TEMPLATE;
     fs::path base_dir = fs::temp_directory_path();
 
     Parser* cli = nullptr;
@@ -35,14 +30,14 @@ void print_help()
         "where 'n#' is length of the generated name. " 
         "If no numbers are specified in the brackets, 11 is assumed.\n"
         "Only ONE replacement field is allowed in the template. "
-        "If nothing is specified, '" XMKTEMP_DEF_TEMPLATE "' is used.\n"
+        "If nothing is specified, '" MAKETEMP_DEF_TEMPLATE "' is used.\n"
         "If no replacement field is present, the template will be the file/dir name. However if a file/dir "
-        "of the same name exists in 'base dir', " XMKTEMP_EXE " will fail."
+        "of the same name exists in 'base dir', " MAKETEMP_EXE " will fail."
     ).indent(2));
 
     fmt::print("Exemple:\n{}\n{}\n\n", 
         TextFlow::Column(
-            XMKTEMP_EXE " -b /my/dir {5}"
+            MAKETEMP_EXE " -b /my/dir {5}"
             ).indent(2),
         TextFlow::Column(
             "# exemple output: /my/dir/abcde"
@@ -50,7 +45,7 @@ void print_help()
     );
     
     fmt::print("Credits:\n{}\n\n",
-        TextFlow::Column(XMKTEMP_EXE " v" XMKTEMP_VER " by " XMKTEMP_AUTHOR).indent(2)
+        TextFlow::Column(MAKETEMP_EXE " v" PROJECT_VERSION " by Pedro Rodrigues").indent(2)
     );
 }
 
