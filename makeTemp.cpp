@@ -32,12 +32,6 @@ static auto random_name(const int size) -> string
     return fn;
 }
 
-// convert to uchar
-// https://en.cppreference.com/w/cpp/string/byte/isdigit
-static bool is_digit(unsigned char c) {
-    return std::isdigit(c);
-}
-
 
 std::pair<int, string> parse_template(string_view tmplt)
 {
@@ -50,7 +44,7 @@ std::pair<int, string> parse_template(string_view tmplt)
     }
 
     auto it = std::adjacent_find(begin(t), end(t), 
-    [](const unsigned char a, const unsigned char b) {
+    [](unsigned char a, unsigned char b) {
         return a == '{' && std::isdigit(b);
     });
 
@@ -62,7 +56,8 @@ std::pair<int, string> parse_template(string_view tmplt)
 
     auto numIt = std::next(it);
 
-    if (!std::all_of(numIt, ite, is_digit)) {
+    if (!std::all_of(numIt, ite, [](unsigned char c){ return std::isdigit(c); }))
+    {
         return { ret, t };
     }
 

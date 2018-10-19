@@ -68,6 +68,7 @@
         "clocale": "cpp",
         "cwctype": "cpp",
         "deque": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "config.h.cmake": "c"
     }
 }

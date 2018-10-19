@@ -6,6 +6,11 @@
                 "${workspaceFolder}/**",
                 "C:/Users/Pedro/.conan/data/fmt/5.1.0/bincrafters/stable/package/4fbb7f15bea2f52c0227861e1d3a322786d24189/include"
             ],
+            "browse": {
+                "path": [
+                    "C:/Users/Pedro/.conan/data/**/include"
+                ]
+            },
             "defines": [
                 "_DEBUG",
                 "UNICODE",
@@ -22,7 +27,12 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/home/pedro/.conan/data/fmt/5.1.0/bincrafters/stable/package/053ea29eb0edc6b1695c893b738a971110c756fd/include"
-            ], 
+            ],
+            "browse": {
+                "path": [
+                    "/home/pedro/.conan/data/**/include"
+                ]
+            },
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
             "cppStandard": "c++17",
