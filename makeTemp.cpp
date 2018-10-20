@@ -1,6 +1,7 @@
 #include <random>
 #include <fstream>
 #include <string>
+#include <cctype>
 
 #include "fmt/format.h"
 #include "makeTemp.h"
@@ -108,7 +109,7 @@ fs::path temp_filename(string_view tmplt, fs::path dir, error_code& ec)
         auto fn = fmt::format(normTempl, name);
         dir /= fn;
     }
-    catch(const fmt::format_error& e)
+    catch(const fmt::format_error&)
     {
         ec = make_error_code(makeTempErr::invalid_template); 
     }
