@@ -6,7 +6,7 @@
         {
             "label": "Build Debug",
             "type": "shell",
-            "problemMatcher": "$gcc",
+            "problemMatcher": ["$msCompile", "$gcc"],
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -23,7 +23,7 @@
         {
             "label": "Build Release",
             "type": "shell",
-            "problemMatcher": "$gcc",
+            "problemMatcher": ["$msCompile", "$gcc"],
             "windows": {
                 "command": "powershell",
                 "args": [ "${workspaceFolder}/scripts/build.ps1", "-m", "Release" ]

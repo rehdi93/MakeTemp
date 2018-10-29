@@ -1,6 +1,7 @@
 param(
 # Build mode
 [ValidateSet("Debug", "Release")]
+[Parameter(Mandatory=$true)]
 [string]
 $Mode
 )
@@ -29,9 +30,12 @@ Write-Output "cmake returned $LASTEXITCODE" $SEP
 
 if ($generator -eq "NMake Makefiles") {
     # fix nmake's compile_commands
-    $json = gc "compile_commands.json"
-    $json = [regex]::Replace($json, "@<<\s\s|\s<<", '', [System.Text.RegularExpressions.RegexOptions]::Multiline)
-    $json | Out-File "compile_commands.json" -Encoding utf8
+    $file = "compile_commands.json"
+    $json = gc $file
+    $json = [regex]::Replace($json, "@<<\s\s|\s<<", '', [Text.RegularExpressions.RegexOptions]::Multiline)
+    
+    # can't use out-file here cause the file need to be UTF8 w/o BOM
+    [IO.File]::WriteAllLines((Convert-Path $file), $json)
 }
 
 # run cmake build
