@@ -22,7 +22,7 @@ static auto random_name(const int size) -> string
         ;
 
     auto eng = std::minstd_rand(std::random_device{}());
-    auto dist = std::uniform_int_distribution<>(0, std::size(data) - 2);
+    auto dist = std::uniform_int_distribution<>(0, (int)std::size(data) - 2);
     
     auto fn = string(size, '*');
     for (auto& c : fn)
@@ -73,9 +73,9 @@ std::pair<int, string> parse_template(string_view tmplt)
 
 
 extern
-makeTempErr_category& MakeTempErr_category()
+std::error_category& maketemp_category()
 {
-    static makeTempErr_category c;
+    static maketemp_error_category c;
     return c;
 }
 
@@ -92,13 +92,13 @@ fs::path temp_filename(string_view tmplt, fs::path dir, error_code& ec)
     auto[charCount, normTempl] = parse_template(tmplt);
 
     if (charCount == -1) {
-        ec = make_error_code(makeTempErr::invalid_template);
+        ec = make_error_code(maketemp_error::invalid_template);
         return dir;
     }
     
     if (charCount < 3 || charCount > 255)
     {
-        ec = make_error_code(makeTempErr::bad_template_lenght);
+        ec = make_error_code(maketemp_error::bad_template_lenght);
         return dir;
     }
 
@@ -111,7 +111,7 @@ fs::path temp_filename(string_view tmplt, fs::path dir, error_code& ec)
     }
     catch(const fmt::format_error&)
     {
-        ec = make_error_code(makeTempErr::invalid_template); 
+        ec = make_error_code(maketemp_error::invalid_template); 
     }
     
     return dir;
@@ -123,14 +123,14 @@ error_code create_temp(const fs::path& p, bool isDir)
 
     if (fs::exists(p, ec))
     {
-        return make_error_code(makeTempErr::file_dir_exists);
+        return make_error_code(maketemp_error::file_dir_exists);
     }
 
     if (ec) return ec;
 
     if (!fs::exists(p.parent_path(), ec))
     {
-        return ec ? ec : make_error_code(makeTempErr::base_dir_not_found);
+        return ec ? ec : make_error_code(maketemp_error::base_dir_not_found);
     }
 
     if (!isDir) {
