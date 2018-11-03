@@ -34,3 +34,4 @@
 
 # Red
 build/*
+config.h

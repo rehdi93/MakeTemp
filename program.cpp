@@ -45,7 +45,7 @@ void print_help()
     );
     
     fmt::print("Credits:\n{}\n\n",
-        TextFlow::Column(MAKETEMP_EXE " v" PROJECT_VERSION " by Pedro Rodrigues").indent(2)
+        TextFlow::Column(MAKETEMP_EXE " v" MAKETEMP_VERSION " by Pedro Rodrigues").indent(2)
     );
 }
 
