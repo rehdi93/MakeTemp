@@ -18,7 +18,7 @@ struct makeTempOptions
 
     Parser* cli = nullptr;
     
-} options = {};
+} options;
 
 void print_help()
 {
