@@ -6,14 +6,13 @@
 #include "clara.hpp"
 #include "config.h"
 
-using namespace std;
 using namespace clara;
 namespace fs = std::filesystem;
 
 struct makeTempOptions
 {
     bool dry_run = false, showHelp = false, createDir = false;
-    string name_template = MAKETEMP_DEF_TEMPLATE;
+    std::string name_template = MAKETEMP_DEF_TEMPLATE;
     fs::path base_dir = fs::temp_directory_path();
 
     Parser* cli = nullptr;
@@ -76,7 +75,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    error_code ec;
+    std::error_code ec;
     auto path = temp_filename(options.name_template, options.base_dir, ec);
     if (ec)
     {

@@ -15,7 +15,7 @@ enum class maketemp_error
 
 struct maketemp_error_category : public std::error_category
 {
-    const char* name() const noexcept override { return "makeTemp error"; }
+    const char* name() const noexcept override { return "maketemp error"; }
 
     std::string message(int c) const override
     {

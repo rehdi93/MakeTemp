@@ -11,8 +11,8 @@ $PLATFORM = [System.Environment]::OSVersion.Platform
 
 $projRoot = Resolve-Path "$PSScriptRoot/.."
 $buildDir = Join-Path $projRoot "build"
-#$generator = "Visual Studio 15 2017 Win64"
-$generator = "NMake Makefiles"
+$generator = "Visual Studio 15 2017 Win64"
+#$generator = "NMake Makefiles"
 
 if (!(Test-Path "$buildDir")) {
     mkdir "$buildDir"

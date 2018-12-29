@@ -11,7 +11,6 @@ using std::string_view;
 using std::error_code;
 namespace fs = std::filesystem;
 
-// helper methods
 
 static auto random_name(const int size) -> string
 {
@@ -130,7 +129,7 @@ error_code create_temp(const fs::path& p, bool isDir)
 
     if (!fs::exists(p.parent_path(), ec))
     {
-        return ec ? ec : make_error_code(maketemp_error::base_dir_not_found);
+        return make_error_code(maketemp_error::base_dir_not_found);
     }
 
     if (!isDir) {
@@ -139,7 +138,6 @@ error_code create_temp(const fs::path& p, bool isDir)
         if (f.bad()) { 
             ec = make_error_code(std::errc::io_error); 
         } 
-        f.close(); 
     } 
     else {
         fs::create_directory(p, ec);

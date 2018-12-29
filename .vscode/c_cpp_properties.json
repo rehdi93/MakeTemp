@@ -3,13 +3,9 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "C:/Users/Pedro/.conan/data/fmt/5.1.0/bincrafters/stable/package/b413eed17ea479ad24403334173b44de16c8c35b/include"
             ],
-            "browse": {
-                "path": [
-                    "C:/Users/Pedro/.conan/data/**/include"
-                ]
-            },
             "defines": [
                 "_DEBUG",
                 "UNICODE",
@@ -19,8 +15,7 @@
             "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.14.26428/bin/Hostx64/x64/cl.exe",
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "msvc-x64",
-            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+            "intelliSenseMode": "msvc-x64"
         },
         {
             "name": "Linux",
