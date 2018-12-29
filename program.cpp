@@ -26,22 +26,18 @@ void print_help()
     fmt::print("Creates a temporary file or directory\n{}\n", *options.cli);
     fmt::print("Name template:\n{}\n\n", 
         TextFlow::Column(
-        "Template for the new file/dir name, optionally it may contain a replacement field '{n#}' "
-        "where 'n#' is length of the generated name. " 
-        "If no numbers are specified in the brackets, 11 is assumed.\n"
-        "Only ONE replacement field is allowed in the template. "
-        "If nothing is specified, '" MAKETEMP_DEF_TEMPLATE "' is used.\n"
-        "If no replacement field is present, the template will be the file/dir name. However if a file/dir "
-        "of the same name exists in 'base dir', " MAKETEMP_EXE " will fail."
-    ).indent(2));
+        "A template MUST contain a replacement field '{n#}' or '{}' where 'n#' is the length of a randomly generated string, or 11 if left empty.\n"
+        "Only ONE replacement field is allowed in the template. If no template is provided, '" MAKETEMP_DEF_TEMPLATE "' is used."
+        ).indent(2)
+    );
 
     fmt::print("Exemple:\n{}\n{}\n\n", 
         TextFlow::Column(
             MAKETEMP_EXE " -b /my/dir {5}"
-            ).indent(2),
+        ).indent(2),
         TextFlow::Column(
             "# exemple output: /my/dir/abcde"
-            ).indent(3)
+        ).indent(3)
     );
     
     fmt::print("Credits:\n{}\n\n",
@@ -61,8 +57,7 @@ int main(int argc, char *argv[])
         ("Create a directory instead of a file")
     | Opt(options.base_dir, "base dir")
         ["-b"]["--base-dir"]
-        ("Base directory where the file/dir will be created, defaults to your system's "
-        "TMP folder")
+        ("Base directory where the file/dir will be created, defaults to your system's TMP folder")
     | Arg(options.name_template, "name template")
     ;
 
