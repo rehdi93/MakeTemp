@@ -35,3 +35,4 @@
 # Red
 build/*
 config.h
+.vscode/settings.json
