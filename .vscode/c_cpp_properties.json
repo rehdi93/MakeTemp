@@ -3,8 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**",
-                "C:/Users/Pedro/.conan/data/fmt/5.1.0/bincrafters/stable/package/b413eed17ea479ad24403334173b44de16c8c35b/include"
+                "${workspaceFolder}/**"
             ],
             "defines": [
                 "_DEBUG",
