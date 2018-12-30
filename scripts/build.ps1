@@ -1,18 +1,15 @@
 param(
-# Build mode
-[ValidateSet("Debug", "Release")]
+[ValidateSet("Debug", "Release", "RelWithDebInfo")]
 [Parameter(Mandatory=$true)]
-[string]
-$Mode
+[string] $Mode,
+[string] $Target = 'all',
+[string] $generator = "NMake Makefiles"
 )
 
 $SEP = [string]::new('-', 35)
-$PLATFORM = [System.Environment]::OSVersion.Platform
 
 $projRoot = Resolve-Path "$PSScriptRoot/.."
 $buildDir = Join-Path $projRoot "build"
-$generator = "Visual Studio 15 2017 Win64"
-#$generator = "NMake Makefiles"
 
 if (!(Test-Path "$buildDir")) {
     mkdir "$buildDir"
@@ -22,24 +19,21 @@ Push-Location $buildDir
 
 # run conan
 conan install .. -s build_type="$Mode"
-Write-Output "conan returned $LASTEXITCODE" $SEP
+echo "conan returned $LASTEXITCODE"
+echo $SEP
 
 # run cmake gen
 cmake .. -G "$generator" -DCMAKE_BUILD_TYPE="$Mode"
-Write-Output "cmake returned $LASTEXITCODE" $SEP
+echo "cmake gen returned $LASTEXITCODE"
+echo $SEP
 
 if ($generator -eq "NMake Makefiles") {
-    # fix nmake's compile_commands
-    $file = "compile_commands.json"
-    $json = gc $file
-    $json = [regex]::Replace($json, "@<<\s\s|\s<<", '', [Text.RegularExpressions.RegexOptions]::Multiline)
-    
-    # can't use out-file here cause the file need to be UTF8 w/o BOM
-    [IO.File]::WriteAllLines((Convert-Path $file), $json)
+    & "$PSScriptRoot/fix-nmake-compile-comands.ps1"
 }
 
 # run cmake build
-cmake --build . --config $Mode
-Write-Output "cmake returned $LASTEXITCODE" $SEP
+cmake --build . --config $Mode --target $Target
+echo "cmake build returned $LASTEXITCODE"
+echo $SEP
 
 Pop-Location
