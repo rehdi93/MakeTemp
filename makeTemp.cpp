@@ -33,45 +33,35 @@ static auto random_name(const int size) -> string
 }
 
 
-std::pair<int, string> parse_template(string_view tmplt)
+std::pair<int, string> parse_template(string tmplt)
 {
     int ret = -1;
-    auto t = std::string(tmplt);
 
-    // find default case
-    if (t.find("{}") != string::npos) {
-        return { 11, t };
-    }
+    auto it = std::find(tmplt.begin(), tmplt.end(), '{');
+    auto ite = std::find(it, tmplt.end(), '}');
 
-    auto it = std::adjacent_find(begin(t), end(t), 
-    [](unsigned char a, unsigned char b) {
-        return a == '{' && std::isdigit(b);
-    });
-
-    auto ite = std::find(it, t.end(), '}');
-
-    if (it == t.end() || ite == t.end()) {
-        return { ret, t };
+    if (it == tmplt.end() || ite == tmplt.end()) { // bad template
+        return { ret, tmplt };
+    } else if (it + 1 == ite) { // default case '{}'
+        return { 11, tmplt };
     }
 
     auto numIt = std::next(it);
-
     if (!std::all_of(numIt, ite, [](unsigned char c){ return std::isdigit(c); }))
     {
-        return { ret, t };
+        return { ret, tmplt };
     }
 
     auto num = std::string(numIt, ite);
     ret = std::stoi(num);
 
     // remove number, leaving only '{}'
-    t.erase(numIt, ite);
+    tmplt.erase(numIt, ite);
 
-    return { ret, t };
+    return { ret, tmplt };
 }
 
 
-extern
 std::error_category& maketemp_category()
 {
     static maketemp_error_category c;
@@ -88,7 +78,7 @@ fs::path temp_filename(string_view tmplt, fs::path dir, error_code& ec)
         dir = fs::absolute(dir);
     }
 
-    auto[charCount, normTempl] = parse_template(tmplt);
+    auto[charCount, normTempl] = parse_template(string(tmplt));
 
     if (charCount == -1) {
         ec = make_error_code(maketemp_error::invalid_template);

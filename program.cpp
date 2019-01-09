@@ -21,26 +21,29 @@ struct makeTempOptions
 
 void print_help()
 {
+    using clara::TextFlow::Column;
+    
     // printing 'cli' prints Clara's generated help
-    fmt::print("Creates a temporary file or directory\n{}\n", *options.cli);
+    fmt::print("Creates a temporary file or directory and print its name.\n{}\n", *options.cli);
     fmt::print("Name template:\n{}\n\n", 
-        TextFlow::Column(
-        "A template MUST contain a replacement field '{n#}' or '{}' where 'n#' is the length of a randomly generated string, or 11 if left empty.\n"
-        "Only ONE replacement field is allowed in the template. If no template is provided, '" MAKETEMP_DEF_TEMPLATE "' is used."
+        Column(
+        "A template must contain EXACTLY ONE replacement field '{n#}' or '{}', which will be replaced by a randomly generated string, "
+        "where 'n#' is the length of the string, or 11 if no number is specified.\n"
+        "If no template is provided, '" MAKETEMP_DEF_TEMPLATE "' is used."
         ).indent(2)
     );
 
     fmt::print("Exemple:\n{}\n{}\n\n", 
-        TextFlow::Column(
+        Column(
             MAKETEMP_EXE " -b /my/dir {5}"
         ).indent(2),
-        TextFlow::Column(
+        Column(
             "# exemple output: /my/dir/abcde"
-        ).indent(3)
+        ).indent(2)
     );
     
     fmt::print("Credits:\n{}\n\n",
-        TextFlow::Column(MAKETEMP_EXE " v" MAKETEMP_VERSION " by Pedro Rodrigues").indent(2)
+        Column(MAKETEMP_EXE " v" MAKETEMP_VERSION " by Pedro Rodrigues").indent(2)
     );
 }
 
